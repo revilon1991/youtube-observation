@@ -1,0 +1,30 @@
+parameters:
+    router.request_context.scheme: 'https'
+    asset.request_context.secure: true
+    router.request_context.host: '%env(string:DOMAIN)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            $kernelPublicPath: '%kernel.project_dir%/public'
+            $projectDomain: '%env(string:DOMAIN)%'
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    YouTube\YouTubeDownloader: ~
+    YouTube\YoutubeStreamer: ~
+    GuzzleHttp\Client: ~
+
+    App\Service\CdnService:
+        arguments:
+            - '%env(string:CDN_HOSTNAME)%'
+            - '%env(int:CDN_PORT)%'
+            - '%env(string:CDN_USERNAME)%'
+            - '%env(string:CDN_PASSWORD)%'
+            - '%env(string:CDN_PATH)%'
